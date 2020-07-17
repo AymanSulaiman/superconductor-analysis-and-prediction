@@ -25,14 +25,14 @@ class dl_model:
 
 
     # Splitting the data
-    def train_test_splt(self):
+    def train_test_split(self):
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.2, random_state=42)
         return X_train, X_test, y_train, y_test
 
 
 
     # Superconductor Deep Learning Model
-    def model_itself(X_train, y_train):
+    def model_itself(self, X_train, y_train):
         X_train_shape_1 = X_train.shape[1]
         model = Sequential()
         model.add(Dense(128, input_shape=(X_train_shape_1,), activation='relu'))
@@ -62,9 +62,11 @@ class dl_model:
             validation_split=0.1
         )
 
+        return model
+
 
     # Superconductor Deep Learning Model Analysis
-    def model_analysis(self):
+    def model_analysis(model, X_train, y_train, X_test, y_test):
         y_test_pred = model.predict(X_test)
         y_train_pred = model.predict(X_train)
         print("Training MSE:", round(mean_squared_error(y_train, y_train_pred),4))
@@ -87,4 +89,4 @@ class dl_model:
         ax2.set_ylabel('')
         ax2.set_yticklabels(labels='')
         
-        plt.show()
+        return plt.show()
