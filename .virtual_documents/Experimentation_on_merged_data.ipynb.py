@@ -186,19 +186,19 @@ keras_reg.fit(X_train, y_train, epochs=100,
 mse_test = keras_reg.score(X_test, y_test)
 
 
-from scipy.stats import reciprocal
-from sklearn.model_selection import RandomizedSearchCV
+# from scipy.stats import reciprocal
+# from sklearn.model_selection import RandomizedSearchCV
 
-param_distribs = {
-#     "n_hidden": [0, 1, 2, 3],
-    "n_neurons": np.arange(1, 100),
-#     "learning_rate": reciprocal(3e-4, 3e-2),
-}
+# param_distribs = {
+# #     "n_hidden": [0, 1, 2, 3],
+#     "n_neurons": np.arange(1, 100),
+# #     "learning_rate": reciprocal(3e-4, 3e-2),
+# }
 
-rnd_search_cv = RandomizedSearchCV(keras_reg, param_distribs, n_iter=10, cv=3, verbose=2)
-rnd_search_cv.fit(X_train, y_train, epochs=100,
-                  validation_data=(X_test, y_test),
-                  callbacks=[keras.callbacks.EarlyStopping(patience=10)])
+# rnd_search_cv = RandomizedSearchCV(keras_reg, param_distribs, n_iter=10, cv=3, verbose=2)
+# rnd_search_cv.fit(X_train, y_train, epochs=100,
+#                   validation_data=(X_test, y_test),
+#                   callbacks=[keras.callbacks.EarlyStopping(patience=10)])
 
 
 rnd_search_cv.best_params_
