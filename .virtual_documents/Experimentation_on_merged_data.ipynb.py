@@ -79,44 +79,35 @@ score
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-epochs = 100
-# def make_model(epochs = 2000):
-model = Sequential()
-model.add(Dense(128, input_shape=(X_train.shape[1],), activation='relu'))
-model.add(Dense(256, activation='relu'))
-model.add(Dense(512, activation='relu'))
-model.add(Dense(512, activation='relu'))
-model.add(Dense(1024, activation='relu'))
-model.add(Dense(1024, activation='relu'))
-model.add(Dense(1024, activation='relu'))
-model.add(Dense(2048, activation='relu'))
-model.add(Dense(2048, activation='relu'))
-model.add(Dense(4096, activation='relu'))
-model.add(Dense(1, activation='linear'))
 
-model.compile(loss='mean_squared_error',
+def model_and_evaluation(epochs, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test):
+    model = Sequential()
+    model.add(Dense(128, input_shape=(X_train.shape[1],), activation='relu'))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(1024, activation='relu'))
+    model.add(Dense(1024, activation='relu'))
+    model.add(Dense(1024, activation='relu'))
+    model.add(Dense(2048, activation='relu'))
+    model.add(Dense(2048, activation='relu'))
+    model.add(Dense(4096, activation='relu'))
+    model.add(Dense(1, activation='linear'))
+
+    model.compile(loss='mean_squared_error',
             optimizer='adam',
             metrics=['mae', 'mse'])
 
-print(model.summary())
+    print(model.summary())
 
 
-
-# model.fit(
-#     X_train,
-#     y_train,
-#     epochs=epochs,
-#     batch_size=512,
-#     validation_split=0.1,
-# )
-    
-#     return model
-
-
-history = model.fit(X_train, y_train, epochs=1, batch_size=512, validation_data=(X_test, y_test))
-
-
-def deep_learning_model_evaluation(model, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test):
+    model.fit(
+    X_train,
+    y_train,
+    epochs=epochs,
+    batch_size=512,
+    validation_split=0.1,
+    )
     
     from sklearn.metrics import explained_variance_score, mean_squared_error, r2_score
 
@@ -146,16 +137,29 @@ def deep_learning_model_evaluation(model, skip_epochs=0, X_train=X_train, X_test
     ax2.set_yticklabels(labels='')
     
     plt.show()
+    
+    history = model.fit(
+        X_train, 
+        y_train, 
+        epochs=epochs, 
+        batch_size=512,
+        validation_data=(X_test, y_test)
+    )
+    
+    pd.DataFrame(history.history).plot(figsize=(15,7))
+    plt.grid(True)
+    plt.xlabel('Epochs')
+    plt.ylabel('metric value')
+    # plt.gca().set_ylim(0, 1) # set the vertical range to [0-1]
+    plt.show()
 
 
-history = model.fit(X_train, y_train, epochs=1000, batch_size=512, validation_data=(X_test, y_test))
-pd.DataFrame(history.history).plot(figsize=(15,7))
-plt.grid(True)
-plt.xlabel('Epochs')
-plt.ylabel('metric value')
-# plt.gca().set_ylim(0, 1) # set the vertical range to [0-1]
-plt.show()
-deep_learning_model_evaluation(model=model)
+model_and_evaluation(epochs=10, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+
+
+for i in np.arange(100, 2100, 100):
+    print(f"Epochs: {i}")
+    model_and_evaluation(epochs=i, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
 
 
 from tensorflow import keras
@@ -188,7 +192,7 @@ from scipy.stats import reciprocal
 from sklearn.model_selection import RandomizedSearchCV
 
 param_distribs = {
-    "n_hidden": [0, 1, 2, 3],
+#     "n_hidden": [0, 1, 2, 3],
     "n_neurons": np.arange(1, 100),
 #     "learning_rate": reciprocal(3e-4, 3e-2),
 }
