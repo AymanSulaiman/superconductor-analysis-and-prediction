@@ -149,7 +149,7 @@ def model_and_evaluation(epochs, skip_epochs=0, X_train=X_train, X_test=X_test, 
     pd.DataFrame(history.history).plot(figsize=(15,7))
     plt.grid(True)
     plt.xlabel('Epochs')
-    plt.ylabel('metric value')
+    plt.ylabel('metric values')
     # plt.gca().set_ylim(0, 1) # set the vertical range to [0-1]
     plt.show()
 
@@ -157,9 +157,7 @@ def model_and_evaluation(epochs, skip_epochs=0, X_train=X_train, X_test=X_test, 
 model_and_evaluation(epochs=10, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
 
 
-for i in np.arange(100, 2100, 100):
-    print(f"Epochs: {i}")
-    model_and_evaluation(epochs=i, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+model_and_evaluation(epochs=1500, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
 
 
 from tensorflow import keras
