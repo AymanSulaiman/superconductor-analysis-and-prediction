@@ -9,15 +9,15 @@ df
 
 
 cols = [i for i in df.columns]
-cols
+# cols
 
 
 X = df.drop(['critical_temp', 'material'], axis=1)
-X
+# X
 
 
 y = df.critical_temp.values.reshape(-1,1)
-y
+# y
 
 
 from sklearn.model_selection import train_test_split
@@ -51,35 +51,36 @@ score = r2_score(y_test, y_pred)
 score 
 
 
-from sklearn.model_selection import GridSearchCV
+# from sklearn.model_selection import GridSearchCV
 
-xgb1 = XGBRegressor()
-parameters = {'nthread':[4], #when use hyperthread, xgboost may become slower
-              'objective':['reg:linear'],
-              'learning_rate': [.03, 0.05, .07], #so called `eta` value
-              'max_depth': [5, 6, 7],
-              'min_child_weight': [4],
-              'silent': [1],
-              'subsample': [0.7],
-              'colsample_bytree': [0.7],
-              'n_estimators': [500]}
+# xgb1 = XGBRegressor()
+# parameters = {'nthread':[4], #when use hyperthread, xgboost may become slower
+#               'objective':['reg:linear'],
+#               'learning_rate': [.03, 0.05, .07], #so called `eta` value
+#               'max_depth': [5, 6, 7],
+#               'min_child_weight': [4],
+#               'silent': [1],
+#               'subsample': [0.7],
+#               'colsample_bytree': [0.7],
+#               'n_estimators': [500]}
 
-xgb_grid = GridSearchCV(regressor,
-                        parameters,
-                        cv = 2,
-                        n_jobs = 5,
-                        verbose=True)
+# xgb_grid = GridSearchCV(regressor,
+#                         parameters,
+#                         cv = 2,
+#                         n_jobs = 5,
+#                         verbose=True)
 
-xgb_grid.fit(X_train,
-         y_train)
-print('---------------------------------------------------------------------')
-print(xgb_grid.best_score_)
-print(xgb_grid.best_params_)
+# xgb_grid.fit(X_train,
+#          y_train)
+# print('---------------------------------------------------------------------')
+# print(xgb_grid.best_score_)
+# print(xgb_grid.best_params_)
 
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-
+epochs = 100
+# def make_model(epochs = 2000):
 model = Sequential()
 model.add(Dense(128, input_shape=(X_train.shape[1],), activation='relu'))
 model.add(Dense(256, activation='relu'))
@@ -99,26 +100,20 @@ model.compile(loss='mean_squared_error',
 
 print(model.summary())
 
-epochs = 1000
 
-model.fit(
-    X_train,
-    y_train,
-    epochs=epochs,
-    batch_size=512,
-    validation_split=0.1,
-)
 
-training_history = model.fit(
-    X_train,
-    y_train,
-    verbose = 0,
-    epochs=epochs,
-    batch_size=512,
-    validation_split=0.1,
-)
+# model.fit(
+#     X_train,
+#     y_train,
+#     epochs=epochs,
+#     batch_size=512,
+#     validation_split=0.1,
+# )
+    
+#     return model
 
-print("Average test loss: ", np.average(training_history.history['loss']))
+
+history = model.fit(X_train, y_train, epochs=1, batch_size=512, validation_data=(X_test, y_test))
 
 
 def deep_learning_model_evaluation(model, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test):
@@ -153,4 +148,77 @@ def deep_learning_model_evaluation(model, skip_epochs=0, X_train=X_train, X_test
     plt.show()
 
 
+history = model.fit(X_train, y_train, epochs=1000, batch_size=512, validation_data=(X_test, y_test))
+pd.DataFrame(history.history).plot(figsize=(15,7))
+plt.grid(True)
+plt.xlabel('Epochs')
+plt.ylabel('metric value')
+# plt.gca().set_ylim(0, 1) # set the vertical range to [0-1]
+plt.show()
 deep_learning_model_evaluation(model=model)
+
+
+from tensorflow import keras
+
+
+def build_model(n_hidden=10, n_neurons=300, learning_rate=3e-3, input_shape=(X_train.shape[1],)):
+    model = keras.models.Sequential()
+    model.add(keras.layers.InputLayer(input_shape=input_shape))
+    for layer in range(n_hidden):
+        model.add(keras.layers.Dense(n_neurons, activation="relu"))
+    model.add(keras.layers.Dense(1))
+    optimizer = keras.optimizers.Adam(lr=learning_rate)
+    model.compile(loss="mse", optimizer=optimizer)
+    return model
+
+
+keras_reg = keras.wrappers.scikit_learn.KerasRegressor(build_model)
+
+
+keras_reg.fit(X_train, y_train, epochs=100,
+              validation_data=(X_test, y_test),
+              callbacks=[keras.callbacks.EarlyStopping(patience=10)]
+             )
+
+
+mse_test = keras_reg.score(X_test, y_test)
+
+
+from scipy.stats import reciprocal
+from sklearn.model_selection import RandomizedSearchCV
+
+param_distribs = {
+    "n_hidden": [0, 1, 2, 3],
+    "n_neurons": np.arange(1, 100),
+#     "learning_rate": reciprocal(3e-4, 3e-2),
+}
+
+rnd_search_cv = RandomizedSearchCV(keras_reg, param_distribs, n_iter=10, cv=3, verbose=2)
+rnd_search_cv.fit(X_train, y_train, epochs=100,
+                  validation_data=(X_test, y_test),
+                  callbacks=[keras.callbacks.EarlyStopping(patience=10)])
+
+
+rnd_search_cv.best_params_
+
+
+rnd_search_cv.best_score_
+
+
+rnd_search_cv.best_estimator_
+
+
+rnd_search_cv.score(X_test, y_test)
+
+
+model = rnd_search_cv.best_estimator_.model
+model
+
+
+model.evaluate(X_test, y_test)
+
+
+
+
+
+
