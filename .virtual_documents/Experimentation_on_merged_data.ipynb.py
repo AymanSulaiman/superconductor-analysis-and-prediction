@@ -1,7 +1,20 @@
-import pandas as pd
-import os
-import numpy as np
+import pathlib
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+
+import tensorflow as tf
+
+from tensorflow import keras
+from tensorflow.keras import layers
+
+print(tf.__version__)
+
+import tensorflow_docs as tfdocs
+import tensorflow_docs.plots
+import tensorflow_docs.modeling
 
 
 df = pd.read_csv('merged.csv')
@@ -102,11 +115,11 @@ def model_and_evaluation(epochs, skip_epochs=0, X_train=X_train, X_test=X_test, 
 
 
     model.fit(
-    X_train,
-    y_train,
-    epochs=epochs,
-    batch_size=512,
-    validation_split=0.1,
+        X_train,
+        y_train,
+        epochs=epochs,
+        batch_size=512,
+        validation_split=0.1,
     )
     
     from sklearn.metrics import explained_variance_score, mean_squared_error, r2_score
@@ -158,6 +171,105 @@ model_and_evaluation(epochs=10, skip_epochs=0, X_train=X_train, X_test=X_test, y
 
 
 model_and_evaluation(epochs=1500, skip_epochs=0, X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+
+
+def build_model():
+    model = keras.Sequential([
+        layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(1024, activation='relu'),
+        layers.Dense(1024, activation='relu'),
+        layers.Dense(1024, activation='relu'),
+        layers.Dense(2048, activation='relu'),
+        layers.Dense(2048, activation='relu'),
+        layers.Dense(4096, activation='relu'),
+        layers.Dense(1, activation='linear')
+    ])
+
+    optimizer = tf.keras.optimizers.RMSprop(0.001)
+
+    model.compile(loss='mse',
+                optimizer=optimizer,
+                metrics=['mae', 'mse'])
+    return model
+
+
+model = build_model()
+
+
+model.summary()
+
+
+EPOCHS = 1000
+
+history = model.fit(
+    X_train, 
+    y_train,
+    epochs=EPOCHS, 
+    validation_split = 0.2, 
+    verbose=0,
+    callbacks=[tfdocs.modeling.EpochDots()]
+)
+
+
+hist = pd.DataFrame(history.history)
+hist['epoch'] = history.epoch
+hist.tail()
+
+
+plotter = tfdocs.plots.HistoryPlotter(smoothing_std=2)
+
+
+plotter.plot({'Basic': history}, metric = "mae")
+# plt.ylim([0, 10])
+plt.ylabel('MAE [Critical temp]')
+
+
+plotter.plot({'Basic': history}, metric = "mse")
+plt.ylim([0, 100000])
+plt.ylabel('MSE [Critical temp^2]')
+
+
+model = build_model()
+
+# The patience parameter is the amount of epochs to check for improvement
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+
+early_history = model.fit(X_train, y_train, 
+                    epochs=EPOCHS, validation_split = 0.2, verbose=0, 
+                    callbacks=[early_stop, tfdocs.modeling.EpochDots()])
+
+
+plotter.plot({'Early Stopping': early_history}, metric = "mae")
+# plt.ylim([0, 10])
+plt.ylabel('MAE [Critical temp]')
+
+
+loss, mae, mse = model.evaluate(X_test, y_test, verbose=2)
+
+print("Testing set Mean Abs Error: {:5.2f} Critical temp".format(mae))
+
+
+y_pred = model.predict(X_test).flatten()
+
+a = plt.axes(aspect='equal')
+plt.scatter(y_test, y_pred)
+plt.xlabel('True Values [Critical temp]')
+plt.ylabel('Predictions [Critical temp]')
+# lims = [0, 50]
+# plt.xlim(lims)
+# plt.ylim(lims)
+_ = plt.plot()
+
+
+
+error = y_pred - y_test
+plt.hist(error, bins = 25)
+plt.xlabel("Prediction Error [Critical temp]")
+_ = plt.ylabel("Count")
 
 
 from tensorflow import keras
