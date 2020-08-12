@@ -20,25 +20,28 @@ df_train = pd.read_csv(path_train)
 df_unique_m = pd.read_csv(path_unique_m)
 
 
-@st.cache(suppress_st_warning=True)
-def show_dataframe(x):
-    if x == 'm':
-        return df_merged
-    elif x == 't':
-        return df_train
-    elif x == 'u':
-        return df_unique_m
-    else:
-        return 'you done goofed'
+# @st.cache(suppress_st_warning=True)
+# def show_dataframe(x):
+#     if x == 'm':
+#         return df_merged
+#     elif x == 't':
+#         return df_train
+#     elif x == 'u':
+#         return df_unique_m
+#     else:
+#         return 'you done goofed'
 
 st.title('train')
-st.write(show_dataframe(x = 't'))
+# st.write(show_dataframe(x = 't'))
+st.table(df_train)
 
 st.title('unique')
-st.write(show_dataframe(x = 'u'))
+# st.write(show_dataframe(x = 'u'))
+st.table(df_unique_m)
 
-st.title('merged')
-st.write(show_dataframe(x = 'm'))
+# st.title('merged')
+# st.write(show_dataframe(x = 'm'))
+# st.table(df_merged)
 
 sns.distplot(x = show_dataframe(x = 't')['critical_temp'])
 st.pyplot()
