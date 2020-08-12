@@ -272,30 +272,129 @@ plt.xlabel("Prediction Error [Critical temp]")
 _ = plt.ylabel("Count")
 
 
-from tensorflow import keras
+def build_model():
+    model = keras.Sequential([
+        layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(256, activation='relu'),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(512, activation='relu'),
+        layers.Dense(1024, activation='relu'),
+        layers.Dense(1024, activation='relu'),
+        layers.Dense(1024, activation='relu'),
+        layers.Dense(2048, activation='relu'),
+        layers.Dense(2048, activation='relu'),
+        layers.Dense(4096, activation='relu'),
+        layers.Dense(1, activation='linear')
+    ])
 
+    optimizer = tf.keras.optimizers.Adam(0.001)
 
-def build_model(n_hidden=10, n_neurons=300, learning_rate=3e-3, input_shape=(X_train.shape[1],)):
-    model = keras.models.Sequential()
-    model.add(keras.layers.InputLayer(input_shape=input_shape))
-    for layer in range(n_hidden):
-        model.add(keras.layers.Dense(n_neurons, activation="relu"))
-    model.add(keras.layers.Dense(1))
-    optimizer = keras.optimizers.Adam(lr=learning_rate)
-    model.compile(loss="mse", optimizer=optimizer)
+    model.compile(loss='mse',
+                optimizer=optimizer,
+                metrics=['mae', 'mse'])
     return model
 
 
-keras_reg = keras.wrappers.scikit_learn.KerasRegressor(build_model)
+model = build_model()
 
 
-keras_reg.fit(X_train, y_train, epochs=100,
-              validation_data=(X_test, y_test),
-              callbacks=[keras.callbacks.EarlyStopping(patience=10)]
-             )
+model.summary()
 
 
-mse_test = keras_reg.score(X_test, y_test)
+EPOCHS = 1000
+
+history = model.fit(
+    X_train, 
+    y_train,
+    epochs=EPOCHS, 
+    validation_split = 0.2, 
+    verbose=0,
+    callbacks=[tfdocs.modeling.EpochDots()]
+)
+
+
+hist = pd.DataFrame(history.history)
+hist['epoch'] = history.epoch
+hist.tail()
+
+
+plotter = tfdocs.plots.HistoryPlotter(smoothing_std=2)
+
+
+plotter.plot({'Basic': history}, metric = "mae")
+# plt.ylim([0, 10])
+plt.ylabel('MAE [Critical temp]')
+
+
+plotter.plot({'Basic': history}, metric = "mse")
+plt.ylim([0, 100000])
+plt.ylabel('MSE [Critical temp^2]')
+
+
+model = build_model()
+
+# The patience parameter is the amount of epochs to check for improvement
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+
+early_history = model.fit(X_train, y_train, 
+                    epochs=EPOCHS, validation_split = 0.2, verbose=0, 
+                    callbacks=[early_stop, tfdocs.modeling.EpochDots()])
+
+
+plotter.plot({'Early Stopping': early_history}, metric = "mae")
+# plt.ylim([0, 10])
+plt.ylabel('MAE [Critical temp]')
+
+
+loss, mae, mse = model.evaluate(X_test, y_test, verbose=2)
+
+print("Testing set Mean Abs Error: {:5.2f} Critical temp".format(mae))
+
+
+y_pred = model.predict(X_test).flatten()
+
+a = plt.axes(aspect='equal')
+plt.scatter(y_test, y_pred)
+plt.xlabel('True Values [Critical temp]')
+plt.ylabel('Predictions [Critical temp]')
+# lims = [0, 50]
+# plt.xlim(lims)
+# plt.ylim(lims)
+_ = plt.plot()
+
+
+
+error = y_pred - y_test
+plt.hist(error, bins = 25)
+plt.xlabel("Prediction Error [Critical temp]")
+_ = plt.ylabel("Count")
+
+
+# from tensorflow import keras
+
+
+# def build_model(n_hidden=10, n_neurons=300, learning_rate=3e-3, input_shape=(X_train.shape[1],)):
+#     model = keras.models.Sequential()
+#     model.add(keras.layers.InputLayer(input_shape=input_shape))
+#     for layer in range(n_hidden):
+#         model.add(keras.layers.Dense(n_neurons, activation="relu"))
+#     model.add(keras.layers.Dense(1))
+#     optimizer = keras.optimizers.Adam(lr=learning_rate)
+#     model.compile(loss="mse", optimizer=optimizer)
+#     return model
+
+
+# keras_reg = keras.wrappers.scikit_learn.KerasRegressor(build_model)
+
+
+# keras_reg.fit(X_train, y_train, epochs=100,
+#               validation_data=(X_test, y_test),
+#               callbacks=[keras.callbacks.EarlyStopping(patience=10)]
+#              )
+
+
+# mse_test = keras_reg.score(X_test, y_test)
 
 
 # from scipy.stats import reciprocal
@@ -313,23 +412,23 @@ mse_test = keras_reg.score(X_test, y_test)
 #                   callbacks=[keras.callbacks.EarlyStopping(patience=10)])
 
 
-rnd_search_cv.best_params_
+# rnd_search_cv.best_params_
 
 
-rnd_search_cv.best_score_
+# rnd_search_cv.best_score_
 
 
-rnd_search_cv.best_estimator_
+# rnd_search_cv.best_estimator_
 
 
-rnd_search_cv.score(X_test, y_test)
+# rnd_search_cv.score(X_test, y_test)
 
 
-model = rnd_search_cv.best_estimator_.model
-model
+# model = rnd_search_cv.best_estimator_.model
+# model
 
 
-model.evaluate(X_test, y_test)
+# model.evaluate(X_test, y_test)
 
 
 
