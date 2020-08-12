@@ -31,17 +31,17 @@ df_unique_m = pd.read_csv(path_unique_m)
 #     else:
 #         return 'you done goofed'
 
-st.title('train')
+# st.title('train')
 # st.write(show_dataframe(x = 't'))
-st.table(df_train)
+# st.table(df_train)
 
-st.title('unique')
+# st.title('unique')
 # st.write(show_dataframe(x = 'u'))
-st.table(df_unique_m)
+# st.table(df_unique_m)
 
 # st.title('merged')
 # st.write(show_dataframe(x = 'm'))
 # st.table(df_merged)
 
-sns.distplot(x = show_dataframe(x = 't')['critical_temp'])
+sns.distplot(df_train['critical_temp'])
 st.pyplot()
