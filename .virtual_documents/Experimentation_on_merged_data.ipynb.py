@@ -17,7 +17,7 @@ import tensorflow_docs.plots
 import tensorflow_docs.modeling
 
 
-df = pd.read_csv('merged.csv')
+df = pd.read_csv('data','merged.csv')
 df
 
 
@@ -229,7 +229,7 @@ plt.ylabel('MAE [Critical temp]')
 
 
 plotter.plot({'Basic': history}, metric = "mse")
-plt.ylim([0, 100000])
+plt.ylim([0, 25000])
 plt.ylabel('MSE [Critical temp^2]')
 
 
