@@ -12,8 +12,8 @@ st.title('Superconductor Analysis and Machine Learning')
 
 
 path_merged = os.path.join('merged.csv')
-path_train = os.path.join('train.csv')
-path_unique_m = os.path.join('unique_m.csv')
+path_train = os.path.join('data','train.csv')
+path_unique_m = os.path.join('data','unique_m.csv')
 
 df_merged = pd.read_csv(path_merged)
 df_train = pd.read_csv(path_train)
@@ -43,5 +43,15 @@ df_unique_m = pd.read_csv(path_unique_m)
 # st.write(show_dataframe(x = 'm'))
 # st.table(df_merged)
 
-sns.distplot(df_train['critical_temp'])
-st.pyplot()
+# sns.distplot(df_train['critical_temp'])
+# st.pyplot()
+
+
+x = df_merged.head(30)
+x
+
+st.write('''
+# hello world
+
+This is a blah blah blah.
+''')
