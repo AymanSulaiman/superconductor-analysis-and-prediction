@@ -153,11 +153,12 @@ st.write('This Gives us an r squared score of', 100*round(score_test,4), '%')
 ######################################
 
 
+st.title(f'Sample of the data (tail end)')
 
 show_training_set_df = df_data_no_elements.tail(n=round(0.2*21263))
 show_training_set_df
 
-st.title(f'Number of rows: {len(df_merged)}')
+st.title(f'Number of rows of the full dataset: {len(df_merged)}')
 
 def predicted_actual():
     fig = px.scatter(
@@ -167,7 +168,7 @@ def predicted_actual():
     )
     
     fig.update_layout(
-        title=f'Actual vs Predicted Values',
+        title=f'Actual Temperatures vs Predicted Temperatures',
         xaxis=dict(
             title='Actual Critical Temperature (K)'
         ),
@@ -196,7 +197,7 @@ def mean_atomic_mass_and_critical_temperature():
 
 
     fig.update_layout(
-        title='Mean Atomic Mass and Critical Temperature',
+        title='Mean Atomic Mass and Critical Temperature of the whole Dataset',
         xaxis=dict(
             title='Mean Atomic Mass'
         ),
@@ -215,7 +216,7 @@ mean_atomic_mass_and_critical_temperature()
 
 
 st.write(f'''
-[GitHub Link](#)    
-[Resume]()      
-[LinkedIn]()
+[GitHub Link](https://github.com/AymanSulaiman/superconductor-analysis-and-prediction)    
+[Resume](https://drive.google.com/file/d/1Cic_2AMCGAVRlwc7pu28N2-KcFyDaIhl/view?usp=sharing)      
+[LinkedIn](https://www.linkedin.com/in/s-ayman-sulaiman/)
 ''')
