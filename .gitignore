@@ -4,3 +4,4 @@ venv
 .virtual_documents
 .idea
 __pycache__
+tensorflow_model_and_validation.py
