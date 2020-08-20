@@ -58,3 +58,13 @@ We can see that the MSE and MAE gets lower over time.  This can be seen more eas
 
 [Heroku Site](https://superconductor-analysis.herokuapp.com/)
 
+## Tech Stack
+
+* Python
+* TensorFlow
+* Sci-Kit Learn
+* Pandas
+* Plotly
+* Matplotlib
+* Numpy
+* Streamlit
