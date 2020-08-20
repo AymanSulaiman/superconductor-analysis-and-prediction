@@ -5,6 +5,10 @@ Superconductivity is a phenomenon where a charge can move through a material wit
 
 ![from https://vajiramias.com/current-affairs/superconductivity/5cea6a021d5def3dd9b17c7b/](https://vajiramandravi.s3.us-east-1.amazonaws.com/media/2019/5/26/15/55/30/SUPERCONDUCTIVITY.jpg) [source](https://vajiramias.com/current-affairs/superconductivity/5cea6a021d5def3dd9b17c7b/)
 
+Here is the dataset I used Visualised.  On the Streamlit app, it is far more detailed and interactive.
+![](media/insights.png)
+
+
 ## Method
 A series of Machine Learning and AI techniques were used to analyse and predict the critical temperature of the material. Linear reqgression was the obvious choice and the features of the dataset correlates either directly or indicrectly to the target. Using TensorFlow, a NN (Neural Network) was made to be like a Multivariate Regression model. Four hidden layers were made for this model and was compiled with and Adam optimizer.  3500 epochs were performed and the best NN was saved and exported.  The Metrics used were MAE and MSE.
 ```
@@ -45,6 +49,12 @@ The NN gave a r-squared value of 96.11%. This was achieved after 3500 epochs of 
 
 ![epoch_graph](media/epochs.png)
 
+Below the graph contains the the actual temperature of the super conductors and the predicted temerpatures. There is a correlation to be seen and there are outliers in the data, however it is mostly accurate.
+
+![](media/actual_vs_predicted.png)
+
+
 We can see that the MSE and MAE gets lower over time.  This can be seen more easily with the MSE in this case.  The overall results can be seen on a Streamlit app that is currently deployed on Heroku and can be accessed by anyone.  
 
 [Heroku Site](https://superconductor-analysis.herokuapp.com/)
+
