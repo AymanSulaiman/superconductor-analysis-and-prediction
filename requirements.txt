@@ -72,7 +72,7 @@ plotly==4.9.0
 # Send2Trash==1.5.0
 # six==1.15.0
 sklearn==0.0
-streamlit==0.64.0
+streamlit==1.11.1
 # terminado==0.8.3
 # testpath==0.4.4
 # threadpoolctl==2.1.0
